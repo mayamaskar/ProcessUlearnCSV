@@ -10,7 +10,8 @@ import (
 
 func main() {
 	m := CSVFileToMap()
-	fmt.Println(m)
+	fmt.Println("CSV TO MAP", m)
+
 }
 
 func CSVFileToMap() (returnMap map[string]map[string]string) {
