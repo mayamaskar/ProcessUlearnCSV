@@ -5,162 +5,99 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
-type ALLRecord struct { //declare struct
-	Assignment_Date    string
-	completeDate       string
-	dueDate            string
-	flowrunKey         string
-	assignedFlag       string
-	ISlateFlag         string
-	IncompleteFlag     string
-	completeFlag       string
-	lateFlag           string
-	assignmentFY       string
-	assignedQtr        string
-	dueFY              string
-	dueQtr             string
-	completedFY        string
-	completedQtr       string
-	trainingKey        string
-	flowrunMonth       string
-	flowrunFY          string
-	flowrunQtr         string
-	dateTimestamp      string
-	completionStatus   string
-	TableNames         string
-	ulearn_countryName string
-	Win_Number         string
-	subCourse          string
-	activityId         string
-	userEmail          string
-	fullName           string
-	userid             string
-	enrollType         string
-	jobType            string
-	ManagerEmail       string
-	ManagerFullName    string
-	Manager_userid     string
-	activityName       string
-	categoryType       string
-	ulearn_domain      string
+func main() {
+	m := CSVFileToMap()
+	fmt.Println(m)
 }
 
-func createList(data [][]string) []ALLRecord {
-	var List []ALLRecord
-	for i, line := range data {
-		if i > 0 { // omit header line
-			var rec ALLRecord
-			for j, field := range line {
-				if j == 0 {
-					rec.Assignment_Date = field
-				} else if j == 1 {
-					rec.completeDate = field
-				} else if j == 2 {
-					rec.dueDate = field
-				} else if j == 3 {
-					rec.flowrunKey = field
-				} else if j == 4 {
-					rec.assignedFlag = field
-				} else if j == 5 {
-					rec.ISlateFlag = field
-				} else if j == 6 {
-					rec.IncompleteFlag = field
-				} else if j == 7 {
-					rec.completeFlag = field
-				} else if j == 8 {
-					rec.lateFlag = field
-				} else if j == 9 {
-					rec.assignmentFY = field
-				} else if j == 10 {
-					rec.assignedQtr = field
-				} else if j == 11 {
-					rec.dueFY = field
-				} else if j == 12 {
-					rec.dueQtr = field
-				} else if j == 13 {
-					rec.completedFY = field
-				} else if j == 14 {
-					rec.completedQtr = field
-				} else if j == 15 {
-					rec.trainingKey = field
-				} else if j == 16 {
-					rec.flowrunMonth = field
-				} else if j == 17 {
-					rec.flowrunFY = field
-				} else if j == 18 {
-					rec.flowrunQtr = field
-				} else if j == 19 {
-					rec.dateTimestamp = field
-				} else if j == 20 {
-					rec.completionStatus = field
-				} else if j == 21 {
-					rec.TableNames = field
-				} else if j == 22 {
-					rec.ulearn_countryName = field
-				} else if j == 23 {
-					rec.Win_Number = field
-				} else if j == 24 {
-					rec.subCourse = field
-				} else if j == 25 {
-					rec.activityId = field
-				} else if j == 26 {
-					rec.userEmail = field
-				} else if j == 27 {
-					rec.fullName = field
-				} else if j == 28 {
-					rec.userid = field
-				} else if j == 29 {
-					rec.enrollType = field
-				} else if j == 30 {
-					rec.jobType = field
-				} else if j == 31 {
-					rec.ManagerEmail = field
-				} else if j == 32 {
-					rec.ManagerFullName = field
-				} else if j == 33 {
-					rec.Manager_userid = field
-				} else if j == 34 {
-					rec.activityName = field
-				} else if j == 35 {
-					rec.categoryType = field
-				} else if j == 36 {
-					rec.ulearn_domain = field
-				}
+func CSVFileToMap() (returnMap map[string]map[string]string) {
+	var data = map[string]map[string]string{}
+
+	filePath := "data.csv"
+	// read csv file
+	csvfile, err := os.Open(filePath)
+	if err != nil {
+		return nil
+	}
+
+	defer csvfile.Close()
+	csvfile.Seek(0, 0)
+	reader := csv.NewReader(csvfile)
+
+	rawCSVdata, err := reader.ReadAll()
+	if err != nil {
+		return nil
+	}
+	x := []string{}
+	for i := 1; i < len(rawCSVdata); i++ {
+		x = append(x, rawCSVdata[i][23])
+
+	}
+	fmt.Println("Raw CSVVVV", len(rawCSVdata[0]))
+	//fmt.Printf("Type %T", rawCSVdata)
+	header := []string{} // holds first row (header)
+	//x := []string{"key1", "key2", "key3"}
+	//fmt.Println("xxxxxx", x)
+	//fmt.Println("Record", record)
+	//win := "col1"
+	//fmt.Println("Header", header)
+
+	for lineNum, record := range rawCSVdata {
+		//fmt.Println("Line number", lineNum)
+		// for first row, build the header slice
+		if lineNum == 0 {
+			for i := 0; i < len(rawCSVdata[0]); i++ {
+				//fmt.Println("Header", header)
+				header = append(header, strings.TrimSpace(record[i]))
+
+			}
+			//fmt.Println("Headder", header)
+		} else {
+
+			data[x[lineNum-1]] = map[string]string{}
+
+			for j := 0; j < len(header); j++ {
+
+				data[x[lineNum-1]][header[j]] = rawCSVdata[lineNum][j]
 
 			}
 
-			List = append(List, rec)
+			// returnMap = append(returnMap, data)
+			//fmt.Println("\n Return Map", data)
+
 		}
 
 	}
-	return List
-}
+	//fmt.Println("Dataaaaaaaaa", data)
+	count := 0
+	var data1 = ""
+	for key, ele := range data {
+		//fmt.Println("Key:", key)
+		if key == "" {
+			fmt.Println("Element", ele)
+			data1 = fmt.Sprint(ele)
+			count++
+		}
+	}
+	f, err := os.Create("outputt.txt")
 
-func main() {
-
-	f, err := os.Open("data.csv") //Open CSV file
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// close the file
 	defer f.Close()
+	//data1 := fmt.Sprint(data)
+	_, err2 := f.WriteString(fmt.Sprint(data1))
 
-	// reading CSV File
-	csvReader := csv.NewReader(f)
-	data, err := csvReader.ReadAll()
-	if err != nil {
-		log.Fatal(err)
+	if err2 != nil {
+		log.Fatal(err2)
 	}
 
-	// convert records to array of structs
-	// data = data[:500]
-	// fmt.Println("Dataaaaaaaaa \n", data)
-	// print the array
-	List := createList(data)
+	fmt.Println("done")
+	fmt.Println("Number of Empty Records :: ", count)
+	return data
 
-	// print the array
-	fmt.Printf("%+v\n", List)
 }
