@@ -6,7 +6,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"os"
-
 	"os/signal"
 	"strconv"
 	"strings"
@@ -42,7 +41,6 @@ func main() {
 	reader := bufio.NewReader(os.Stdin) //read from console
 	var packets [][]byte
 	var wg sync.WaitGroup
-	//sync. WaitGroup provides a goroutine synchronization mechanism in Golang , and is used for waiting for a collection of goroutines to finish.
 	var mutex = &sync.Mutex{}
 
 	fmt.Print("Enter No. of packets: ")
